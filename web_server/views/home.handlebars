@@ -1,0 +1,63 @@
+<div id="data"></div>
+<video id="video" width="100%" height="100%" controls autoplay>
+    <source type="video/mp4">
+</video>
+<script>
+    setTimeout(()=>{
+        var host = 'http://localhost:5000/videos';
+        var vid = document.getElementById("video");
+
+        $.ajax({
+            url: host,
+            type: 'GET'
+        }).done(function (data) {
+            // console.log(data);
+            document.getElementById("video").src = "/" + data;;
+            console.log(data)
+        })
+        vid.ontimeupdate = () => {
+        if(vid.currentTime >= (vid.duration - 10) && vid.currentTime < (vid.duration - 3)){
+            var dataToPost = {
+               "temp": 1
+            }
+            $.ajax({
+                url: host,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(dataToPost)
+                }).done(function () {
+                console.log(data);
+                //document.getElementById("video").src = "/" + data;
+            })
+        }
+        if(vid.currentTime >= (vid.duration - 3)){
+                var dataToPost = {
+               "temp": 0
+            }
+            $.ajax({
+                url: host,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(dataToPost)
+                }).done(function () {
+                console.log(data);
+                //document.getElementById("video").src = "/" + data;
+            })
+        }
+        };
+        
+        vid.onended = function() {
+            $.ajax({
+            url: 'http://localhost:5000/videos',
+            type: 'GET'
+        }).done(function (data) {
+            // console.log(data);
+            document.getElementById("video").src = "/" + data;;
+            console.log(data)
+        })
+        };
+        
+    }, 1000)
+  </script>
